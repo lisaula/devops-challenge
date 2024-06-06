@@ -2,6 +2,8 @@
 ## Overview
 This challenge is designed to test and showcase your expertise in DevOps practices, and cloud infrastructure deployment. The project comprises four interrelated packages within a monorepo structure: admin, api, database, and resizePhoto. Each of these components plays a crucial role in the lifecycle of a photo management application. By completing this challenge, you will demonstrate your skills in orchestrating a modern, scalable web application from development to deployment.
 
+**You will have 72 hours to submit the challenge after starting and should not spend more than 8 hours total working on it. It is acceptable to submit something that is incomplete.**
+
 ### Project Structure
 - [admin](packages/admin/README.md): A React-based user interface for uploading photos.
 
