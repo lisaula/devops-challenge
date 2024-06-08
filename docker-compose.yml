@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  admin:
+    build:
+      context: ./
+      dockerfile: packages/admin/dockerfile
+    restart: always
+    ports:
+      - 6000:3001
+
+  # frontend:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./front-end/dockerfile
+  #   ports:
+  #     - 8000:80
+  #   depends_on:
+  #     - backend
+
+  # redis:
+  #   container_name: redis
+  #   image: redis:latest
+  #   command: bash -c "redis-server --appendonly yes --requirepass rEdPaSs7658"
+  #   ports:
+  #     - '6379:6379'
