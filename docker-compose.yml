@@ -9,18 +9,26 @@ services:
     ports:
       - 9000:3001
 
-  # frontend:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./front-end/dockerfile
-  #   ports:
-  #     - 8000:80
-  #   depends_on:
-  #     - backend
+  database:
+    build:
+      context: ./
+      dockerfile: packages/database/dockerfile
+    depends_on:
+      - postgres
 
-  # redis:
-  #   container_name: redis
-  #   image: redis:latest
-  #   command: bash -c "redis-server --appendonly yes --requirepass rEdPaSs7658"
-  #   ports:
-  #     - '6379:6379'
+  postgres:
+    image: postgres:16
+    container_name: my_postgres
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
