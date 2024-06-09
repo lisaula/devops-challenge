@@ -7,7 +7,7 @@ services:
       dockerfile: packages/admin/dockerfile
     restart: always
     ports:
-      - 6000:3001
+      - 9000:3001
 
   # frontend:
   #   build:
