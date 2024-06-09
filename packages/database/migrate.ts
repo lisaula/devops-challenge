@@ -5,7 +5,7 @@ import postgres from 'postgres'
 import mySchema from './src/schema'
 import path from 'path'
 
-const sql = postgres(process.env.DATABASE_URL as string, { ssl: { rejectUnauthorized: false } })
+const sql = postgres( process.env.DATABASE_URL as string)
 const db = drizzle(sql, { schema: mySchema })
 
 const runMigrations = async () => {
