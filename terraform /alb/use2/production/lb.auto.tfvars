@@ -19,7 +19,7 @@ lb = {
       http = []
       https = [
         { priority = 1, action = "forward", host_header = ["devops.com"], tg_name = "devops-admin" },
-        { priority = 2, action = "forward", host_header = ["devops.com"], condition = "/api/*", tg_name = "devops-api" },
+        { priority = 2, action = "forward", host_header = ["devops.com"], path_pattern = "/api/*", tg_name = "devops-api" },
       ]
     }
     tags = { }
