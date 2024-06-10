@@ -8,17 +8,17 @@ on:
     paths: 
       - packages/api/**
 jobs:
-  notify-slack: 
-    runs-on: ubuntu-latest
-    env: 
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    steps:
-      - uses: act10ns/slack@v2
-        with: 
-          status: starting 
-          channel: '#devops-challenge'
-          message: Starting API Build...
-    if: always()
+  # notify-slack: 
+  #   runs-on: ubuntu-latest
+  #   env: 
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #   steps:
+  #     - uses: act10ns/slack@v2
+  #       with: 
+  #         status: starting 
+  #         channel: '#devops-challenge'
+  #         message: Starting API Build...
+  #   if: always()
   set-environment:
     runs-on: ubuntu-latest
     outputs:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Test env build-env-file
         run: |
-          bash -eux .github/devops/build.sh
+          bash -eux .github/devops/build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

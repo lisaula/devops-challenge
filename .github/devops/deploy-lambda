@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 set -ex
+echo "ENVIRONMENT $BRANCH"
 REPO_NAME="devops-challenge-function"
+
 if [[ "$BRANCH" = "sandbox" ]]; then
-  FUNCTION_NAME="${REPO_NAME}-sandbox"
+  FUNCTION_NAME="$REPO_NAME-sandbox"
 fi
 if [[ "$BRANCH" = "staging" ]]; then
-  FUNCTION_NAME="${REPO_NAME}-staging"
+  FUNCTION_NAME="$REPO_NAME-staging"
 fi
 if [[ "$BRANCH" = "main" ]]; then
-  FUNCTION_NAME="${REPO_NAME}-prod"
+  FUNCTION_NAME="$REPO_NAME-prod"
 fi
 
 if [ -z "$FUNCTION_NAME" ]; then
