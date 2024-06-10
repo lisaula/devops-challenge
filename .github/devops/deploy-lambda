@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 echo "ENVIRONMENT $BRANCH"
-REPO_NAME="devops-challenge-function"
-FUNCTION_NAME="NONE"
+export REPO_NAME="devops-challenge-function"
+export FUNCTION_NAME="NONE"
 if [[ "$BRANCH" = "sandbox" ]]; then
   FUNCTION_NAME="$REPO_NAME-sandbox"
 fi
