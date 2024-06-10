@@ -52,6 +52,7 @@ jobs:
       PHOTOS_BUCKET: ${{vars.PHOTOS_BUCKET}}
       AWS_REGION: ${{ vars.AWS_REGION }}
       DEVOPS_APPLICATION: ${{ needs.set-environment.outputs.DEVOPS_APPLICATION }}
+      ENVIRONMENT_NAME: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
     steps:
       - name: Checkout 
         uses: actions/checkout@v2

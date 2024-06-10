@@ -2,7 +2,7 @@
 set -ex
 echo "ENVIRONMENT $BRANCH"
 REPO_NAME="devops-challenge-function"
-
+FUNCTION_NAME="NONE"
 if [[ "$BRANCH" = "sandbox" ]]; then
   FUNCTION_NAME="$REPO_NAME-sandbox"
 fi
@@ -13,7 +13,7 @@ if [[ "$BRANCH" = "main" ]]; then
   FUNCTION_NAME="$REPO_NAME-prod"
 fi
 
-if [ -z "$FUNCTION_NAME" ]; then
+if [ "$FUNCTION_NAME" = "NONE" ]; then
   echo 'Error: lambda function name is not defined'
   exit 1
 fi
