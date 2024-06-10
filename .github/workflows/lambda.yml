@@ -84,7 +84,7 @@ jobs:
         run: | 
           cd ./functions/resizePhoto
           pnpm install 
-          npx tsc -f tsconfig.json
+          npx tsc -p tsconfig.json
           mv node_modules src/node_modules
 
       - name: Package 
