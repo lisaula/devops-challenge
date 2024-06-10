@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -ex
+
+echo "Environment $ENVIRONMENT_NAME"
+echo "App $DEVOPS_APPLICATION"
+
+
+
+ENV_PATH="./packages/api/.env"
+if [ "$DEVOPS_APPLICATION" = "lambda" ];
+    then
+    ENV_PATH="./functions/resizePhoto/src/.env"
+fi
+
+touch $ENV_PATH
+echo "DATABASE_URL=$DB_HOSTNAME" >> $ENV_PATH
+echo "PHOTOS_BUCKET=$PHOTOS_BUCKET" >> $ENV_PATH
+echo "AWS_REGION=$AWS_REGION" >> $ENV_PATH

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -ex
+REPO_NAME="devops-challenge-function"
+if [[ "$BRANCH" = "sandbox" ]]; then
+  FUNCTION_NAME="${REPO_NAME}-sandbox"
+fi
+if [[ "$BRANCH" = "staging" ]]; then
+  FUNCTION_NAME="${REPO_NAME}-staging"
+fi
+if [[ "$BRANCH" = "main" ]]; then
+  FUNCTION_NAME="${REPO_NAME}-prod"
+fi
+
+if [ -z "$FUNCTION_NAME" ]; then
+  echo 'Error: lambda function name is not defined'
+  exit 1
+fi
+
+cd ./functions/resizePhoto/src
+ls -lah
+aws s3 cp ${REPO_NAME}.zip s3://devops-challenge-lci/$BRANCH/
+
+# aws lambda update-function-code \
+#   --function-name "$FUNCTION_NAME" \
+#   --region us-east-2 \
+#   --s3-bucket devops-challenge-lci \
+#   --s3-key "$BRANCH/${REPO_NAME}.zip"
+
+echo "Deployed $FUNCTION_NAME from $BRANCH!"

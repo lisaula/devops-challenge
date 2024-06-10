@@ -1,0 +1,12 @@
+
+#!/usr/bin/env bash
+set -ex
+
+CLUSTER_LATEST_TASK=$(aws ecs list-task-definitions --family-prefix ${CLUSTER_TASK_FAM} --sort DESC --query 'taskDefinitionArns[0]' --output text)
+echo "aws ecs update-service --cluster ${CLUSTER} --service ${CLUSTER_SERVICE}"
+echo "aws ecs update-service  --force-new-deployment  --cluster ${CLUSTER} --service ${CLUSTER_SERVICE} --task-definition ${CLUSTER_LATEST_TASK}"
+aws ecs update-service --cluster ${CLUSTER} --service ${CLUSTER_SERVICE}
+aws ecs update-service  --force-new-deployment  --cluster ${CLUSTER} --service ${CLUSTER_SERVICE} --task-definition ${CLUSTER_LATEST_TASK}
+echo "Waiting for deployment to finish on ECS"
+sleep 300
+aws ecs wait services-stable --cluster ${CLUSTER} --service ${CLUSTER_SERVICE}

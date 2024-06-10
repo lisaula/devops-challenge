@@ -7,7 +7,7 @@ service_definitions = {
     svc_subnets      = ["sn-prv001", "sn-prv002"]
     security_groups  = ["devops-ecs"]
     grace_period     = 0 
-    cluster_name     = "sandbox-ecs001"
+    cluster_name     = "prod-ecs001"
     name             = "devops-admin"
   },
   "devops-api" = {
@@ -18,7 +18,7 @@ service_definitions = {
     svc_subnets      = ["sn-prv001", "sn-prv002"]
     security_groups  = ["cfi-ecs"]
     grace_period     = 0 #10
-    cluster_name     = "sandbox-ecs001"
+    cluster_name     = "prod-ecs001"
     name             = "devops-api"
   }
 }

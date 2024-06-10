@@ -1,0 +1,102 @@
+name: LAMBDA Build, Push && Deploy
+on: 
+  push:
+    branches: 
+      - main
+      - sandbox 
+      - staging
+    paths: 
+      - functions/resizePhoto/**
+jobs:
+  # notify-slack: 
+  #   runs-on: ubuntu-latest
+  #   env: 
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #   steps:
+  #     - uses: act10ns/slack@v2
+  #       with: 
+  #         status: starting 
+  #         channel: '#devops-challenge'
+  #         message: Starting LAMBDA Build...
+  #   if: always()
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      ENVIRONMENT_NAME: ${{ steps.set_env.outputs.ENVIRONMENT_NAME }}
+      DEVOPS_APPLICATION: ${{ steps.set_env.outputs.APPLICATION }}
+    steps:
+      - name: Check if prod
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "ENVIRONMENT_NAME=production" >> $GITHUB_ENV
+      - name: Check if staging
+        if: endsWith(github.ref, '/staging')
+        run: |
+          echo "ENVIRONMENT_NAME=staging" >> $GITHUB_ENV 
+      - name: Check if sandbox
+        if: endsWith(github.ref, '/sandbox')
+        run: |
+          echo "ENVIRONMENT_NAME=sandbox" >> $GITHUB_ENV 
+      - name: set output
+        id: set_env
+        run: | 
+          echo "ENVIRONMENT_NAME=${{env.ENVIRONMENT_NAME}}" >> $GITHUB_OUTPUT
+          echo "APPLICATION=lambda" >> $GITHUB_OUTPUT
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs:  set-environment
+    environment: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
+    env:
+      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      PHOTOS_BUCKET: ${{vars.PHOTOS_BUCKET}}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      DEVOPS_APPLICATION: ${{ needs.set-environment.outputs.DEVOPS_APPLICATION }}
+      BRANCH: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+
+      - name: Test env build-env-file
+        run: |
+          bash -eux .github/devops/build.sh
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ var.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Build
+        run: | 
+          cd ./functions/resizePhoto
+          pnpm install 
+          npx tsc -f tsconfig.json
+          mv node_modules src/node_modules
+
+      - name: Package 
+        run: |
+          cd ./functions/resizePhoto/src
+          zip -9 -vr ${DEVOPS_APPLICATION}.zip .
+
+      - name: Deploy
+        run: |
+          sh ./.github/devops/deploy-lambda
+
+  # notify-job-status: 
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - set-environment
+  #     - build-and-deploy
+  #   env: 
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #   steps:
+  #     - uses: act10ns/slack@v2
+  #       with: 
+  #         status: ${{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success'}}
+  #         channel: '#devops-challenge'
+  #         steps: ${{  toJson(steps) }}
+  #   if: always()      
+
+

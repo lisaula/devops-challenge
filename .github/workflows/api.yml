@@ -1,0 +1,128 @@
+name: API Build, Push && Deploy
+on: 
+  push:
+    branches: 
+      - main
+      - sandbox 
+      - staging
+    paths: 
+      - packages/api/**
+jobs:
+  notify-slack: 
+    runs-on: ubuntu-latest
+    env: 
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: act10ns/slack@v2
+        with: 
+          status: starting 
+          channel: '#devops-challenge'
+          message: Starting API Build...
+    if: always()
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      ENVIRONMENT_NAME: ${{ steps.set_env.outputs.ENVIRONMENT_NAME }}
+      DEVOPS_APPLICATION: ${{ steps.set_env.outputs.APPLICATION }}
+    steps:
+      - name: Check if prod
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "ENVIRONMENT_NAME=production" >> $GITHUB_ENV
+      - name: Check if staging
+        if: endsWith(github.ref, '/staging')
+        run: |
+          echo "ENVIRONMENT_NAME=staging" >> $GITHUB_ENV 
+      - name: Check if sandbox
+        if: endsWith(github.ref, '/sandbox')
+        run: |
+          echo "ENVIRONMENT_NAME=sandbox" >> $GITHUB_ENV 
+      - name: set output
+        id: set_env
+        run: | 
+          echo "ENVIRONMENT_NAME=${{env.ENVIRONMENT_NAME}}" >> $GITHUB_OUTPUT
+          echo "APPLICATION=api" >> $GITHUB_OUTPUT
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs:  set-environment
+    environment: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
+    env:
+      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      PHOTOS_BUCKET: ${{vars.PHOTOS_BUCKET}}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      DEVOPS_APPLICATION: ${{ needs.set-environment.outputs.DEVOPS_APPLICATION }}
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+
+      - name: Test env build-env-file
+        run: |
+          bash -eux .github/devops/build.sh
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ var.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login Amazon ECR
+        id: login-ecr
+        uses: aws-action/amazon-ecr-login@v1
+
+      - name: Build, tag and push image
+        env: 
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          BRANCH: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
+        run: | 
+          docker compose build $DEVOPS_APPLICATION
+          docker tag devops-challenge-$DEVOPS_APPLICATION:latest $ECR_REGISTRY/devops-challenge-$DEVOPS_APPLICATION:$BRANCH
+          docker push $ECR_REGISTRY/devops-challenge-$DEVOPS_APPLICATION:$BRANCH
+
+
+  # deploy-aws:
+  #   runs-on: ubuntu-latest
+  #   needs: 
+  #     - set-environment
+  #     - build-docker
+  #   env:
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     ENVIRONMENT_NAME: ${{ needs.set-environment.outputs.ENVIRONMENT_NAME }}
+  #     DEVOPS_APPLICATION: ${{ needs.set-environment.outputs.DEVPOS_APPLICATION }}
+  #   steps:
+  #   - name: Checkout 
+  #     uses: actions/checkout@v2
+  #   - name: Configure AWS credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ vars.AWS_REGION }}
+    
+  #   - name: Set Env Vars 
+  #     run: |
+  #       sh ./.github/devops/pre-deploy
+
+  #   - name: Deploy
+  #     run: |
+  #       sh ./.github/devops/deploy
+
+
+  # notify-job-status: 
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - set-environment
+  #     - build-docker
+  #     - deploy-aws
+  #   env: 
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #   steps:
+  #     - uses: act10ns/slack@v2
+  #       with: 
+  #         status: ${{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success'}}
+  #         channel: '#coloro-cci'
+  #         steps: ${{  toJson(steps) }}
+  #   if: always()      
+
+

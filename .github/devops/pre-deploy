@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -ex
+
+export ECR_REPO_NAME="devops-challenge"
+if [ "$ENVIRONMENT_NAME" = "staging" ];
+    then
+        echo "CLUSTER=staging-ecs001" >> $GITHUB_ENV
+        echo "CLUSTER_SERVICE=staging-${ECR_REPO_NAME}-$DEVOPS_APPLICATION" >> $GITHUB_ENV
+        echo "CLUSTER_TASK_FAM=staging-${ECR_REPO_NAME}-$DEVOPS_APPLICATION" >> $GITHUB_ENV
+fi
+
+if [ "$ENVIRONMENT_NAME" = "production" ];
+    then
+        echo "CLUSTER=prod-ecs001" >> $GITHUB_ENV
+        echo "CLUSTER_SERVICE=prod-${ECR_REPO_NAME}-$DEVOPS_APPLICATION" >> $GITHUB_ENV
+        echo "CLUSTER_TASK_FAM=prod-${ECR_REPO_NAME}-$DEVOPS_APPLICATION" >> $GITHUB_ENV
+fi
+
