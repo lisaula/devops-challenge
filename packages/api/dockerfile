@@ -5,11 +5,10 @@ RUN corepack enable
 COPY . /app
 
 FROM base AS build
-WORKDIR /app/packages/admin
+WORKDIR /app/packages/api
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
 FROM base
 COPY --from=build /app /app
-WORKDIR /app/packages/admin
-EXPOSE 3001
-CMD [ "pnpm", "run", "dev", "--host", "0.0.0.0" ]
+WORKDIR /app/packages/api
+CMD [ "pnpm", "run", "dev" ]

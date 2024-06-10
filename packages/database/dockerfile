@@ -10,5 +10,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
 FROM base
 COPY --from=build /app /app
+EXPOSE 3000
 WORKDIR /app/packages/database
 CMD [ "pnpm", "run", "migrate" ]
