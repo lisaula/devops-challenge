@@ -3,3 +3,7 @@ node_modules
 .gitignore
 *.md
 dist
+dockerfile
+packages/api
+packages/nginx
+function/resizePhoto
