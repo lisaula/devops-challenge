@@ -1,0 +1,28 @@
+[
+    {
+        "name": "${name}",
+        "image": "${image}",
+        "cpu": ${cpu},
+        "memory": ${memory},
+        "task_role_arn": "${task_role_arn}",
+        "essential" : true,
+        "mountPoints": [],
+        "volumesFrom": [],
+        "portMappings":[
+            {
+                "containerPort": ${container_port},
+                "protocol": "tcp",
+                "hostPort": ${host_port}
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "${aws_logs_group}",
+                "awslogs-stream-prefix": "${log_stream_prefix}",
+                "awslogs-region": "${aws_region}"
+            }
+        },
+        "environment":  ${environment}
+    }
+]
