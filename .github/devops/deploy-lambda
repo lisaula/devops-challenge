@@ -4,7 +4,8 @@ echo "ENVIRONMENT $BRANCH"
 export REPO_NAME="devops-challenge-function"
 export FUNCTION_NAME="NONE"
 if [[ "$BRANCH" = "sandbox" ]]; then
-  FUNCTION_NAME="$REPO_NAME-sandbox"
+    echo "Function name ${FUNCTION_NAME}"
+    FUNCTION_NAME="$REPO_NAME-sandbox"
 fi
 if [[ "$BRANCH" = "staging" ]]; then
   FUNCTION_NAME="$REPO_NAME-staging"
