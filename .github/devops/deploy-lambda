@@ -20,7 +20,7 @@ fi
 
 cd ./functions/resizePhoto/src
 ls -lah
-aws s3 cp ${REPO_NAME}.zip s3://devops-challenge-lci/$BRANCH/
+aws s3 cp ${DEVOPS_APPLICATION}.zip s3://devops-challenge-lci/$BRANCH/
 
 # aws lambda update-function-code \
 #   --function-name "$FUNCTION_NAME" \

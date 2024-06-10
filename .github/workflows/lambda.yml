@@ -90,15 +90,11 @@ jobs:
       - name: Package 
         run: |
           cd ./functions/resizePhoto/src
-          pwd
-          ls -lah 
           zip -9 -vr ${DEVOPS_APPLICATION}.zip .
           ls -lah 
 
       - name: Deploy
         run: |
-          ls -lah 
-          pwd
           sh ./.github/devops/deploy-lambda
 
   # notify-job-status: 
